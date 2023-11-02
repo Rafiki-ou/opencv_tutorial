@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1800
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opencv_cpp_tutorial", "opencv_cpp_tutorial\opencv_cpp_tutorial.vcxproj", "{91561059-1FF5-4048-9DFD-AB24C65228EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Debug|x64.ActiveCfg = Debug|x64
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Debug|x64.Build.0 = Debug|x64
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Debug|x86.ActiveCfg = Debug|Win32
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Debug|x86.Build.0 = Debug|Win32
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Release|x64.ActiveCfg = Release|x64
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Release|x64.Build.0 = Release|x64
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Release|x86.ActiveCfg = Release|Win32
+		{91561059-1FF5-4048-9DFD-AB24C65228EC}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AF9DD3FD-1E89-476A-9309-51D53ACFB9EA}
+	EndGlobalSection
+EndGlobal
