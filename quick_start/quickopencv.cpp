@@ -196,3 +196,316 @@ void QuickDemo::keyDemo(cv::Mat& image) {
 			cv::imshow("Image", dst);
 	}
 }
+
+void QuickDemo::colorStyleDemo(cv::Mat& image) {
+	int color_map_types[] = {
+		cv::ColormapTypes::COLORMAP_AUTUMN,
+		cv::ColormapTypes::COLORMAP_BONE,
+		cv::ColormapTypes::COLORMAP_JET,
+		cv::ColormapTypes::COLORMAP_WINTER,
+		cv::ColormapTypes::COLORMAP_RAINBOW,
+		cv::ColormapTypes::COLORMAP_OCEAN,
+		cv::ColormapTypes::COLORMAP_SUMMER,
+		cv::ColormapTypes::COLORMAP_SPRING,
+		cv::ColormapTypes::COLORMAP_COOL,
+		cv::ColormapTypes::COLORMAP_HSV,
+		cv::ColormapTypes::COLORMAP_PINK,
+		cv::ColormapTypes::COLORMAP_HOT,
+		cv::ColormapTypes::COLORMAP_PARULA,
+		cv::ColormapTypes::COLORMAP_MAGMA,
+		cv::ColormapTypes::COLORMAP_INFERNO,
+		cv::ColormapTypes::COLORMAP_PLASMA,
+		cv::ColormapTypes::COLORMAP_VIRIDIS,
+		cv::ColormapTypes::COLORMAP_CIVIDIS,
+		cv::ColormapTypes::COLORMAP_TWILIGHT,
+		cv::ColormapTypes::COLORMAP_TWILIGHT_SHIFTED,
+		cv::ColormapTypes::COLORMAP_TURBO,
+		cv::ColormapTypes::COLORMAP_DEEPGREEN
+	};
+	cv::Mat dst = cv::Mat::zeros(image.size(), image.type());
+	int c = 0;
+	int index = 0;
+	while (true) {
+		c = cv::waitKey(500);
+		if (c == 27) break;
+		// 伪彩色函数
+
+		cv::applyColorMap(image, dst, color_map_types[index++ % 22]);
+		cv::imshow("Image", dst);
+	}
+}
+
+void QuickDemo::logicOperationDemo(cv::Mat& image) {
+	cv::Mat m1 = cv::Mat::zeros(cv::Size(256, 256), CV_8UC3);
+	cv::Mat m2 = cv::Mat::zeros(cv::Size(256, 256), CV_8UC3);
+	cv::Mat dst = cv::Mat::zeros(cv::Size(256, 256), CV_8UC3);
+	// 绘制一个矩形 第四个参数表示线宽，大于0表示描边  小于0表示填充
+	// LINE_4 LINE_8 表示以4领域或8领域进行像素绘制 LINE_AA表示反锯齿
+	// Rect(x, y, width, heigh)
+	cv::rectangle(m1, cv::Rect(100, 100, 80, 80), cv::Scalar(255, 255, 0), -1, cv::LINE_8, 0);
+	cv::rectangle(m2, cv::Rect(150, 150, 80, 80), cv::Scalar(0, 255, 255), -1, cv::LINE_8, 0);
+	cv::imshow("m1", m1);
+	cv::imshow("m2", m2);
+
+	// 逻辑操作
+#if 0
+	// 与操作
+	cv::bitwise_and(m1, m2, dst);
+#else
+	{
+		int w = m1.cols;
+		int h = m1.rows;
+		for (int row = 0; row < h; ++row) {
+			uchar* m1_cur_row = m1.ptr<uchar>(row);
+			uchar* m2_cur_row = m2.ptr<uchar>(row);
+			uchar* dst_cur_row = dst.ptr<uchar>(row);
+			for (int col = 0; col < w; ++col) {
+				*dst_cur_row++ = *m1_cur_row++ & *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ & *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ & *m2_cur_row++;
+			}
+		}
+	}
+#endif
+	cv::imshow("与运算", dst);
+
+#if 0
+	// 或操作
+	cv::bitwise_or(m1, m2, dst);
+#else
+	{
+		int w = m1.cols;
+		int h = m1.rows;
+		for (int row = 0; row < h; ++row) {
+			uchar* m1_cur_row = m1.ptr<uchar>(row);
+			uchar* m2_cur_row = m2.ptr<uchar>(row);
+			uchar* dst_cur_row = dst.ptr<uchar>(row);
+			for (int col = 0; col < w; ++col) {
+				*dst_cur_row++ = *m1_cur_row++ | *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ | *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ | *m2_cur_row++;
+			}
+	}
+}
+#endif
+	cv::imshow("或运算", dst);
+
+#if 0
+	// 异或操作
+	cv::bitwise_xor(m1, m2, dst);
+#else
+	{
+		int w = m1.cols;
+		int h = m1.rows;
+		for (int row = 0; row < h; ++row) {
+			uchar* m1_cur_row = m1.ptr<uchar>(row);
+			uchar* m2_cur_row = m2.ptr<uchar>(row);
+			uchar* dst_cur_row = dst.ptr<uchar>(row);
+			for (int col = 0; col < w; ++col) {
+				*dst_cur_row++ = *m1_cur_row++ ^ *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ ^ *m2_cur_row++;
+				*dst_cur_row++ = *m1_cur_row++ ^ *m2_cur_row++;
+			}
+		}
+	}
+#endif
+	cv::imshow("异或运算", dst);
+
+#if 0
+	// 取反操作
+	cv::bitwise_not(m1, dst);
+#else
+	{
+		int w = m1.cols;
+		int h = m1.rows;
+		for (int row = 0; row < h; ++row) {
+			uchar* m1_cur_row = m1.ptr<uchar>(row);
+			uchar* dst_cur_row = dst.ptr<uchar>(row);
+			for (int col = 0; col < w; ++col) {
+				*dst_cur_row++ = 255 - *m1_cur_row++;
+				*dst_cur_row++ = 255 - *m1_cur_row++;
+				*dst_cur_row++ = 255 - *m1_cur_row++;
+			}
+		}
+	}
+#endif
+	cv::imshow("取反运算", dst);
+}
+
+void QuickDemo::channelsSplitAndMergeDemo(cv::Mat& image) {
+	std::vector<cv::Mat> mv;
+	// 颜色分离
+	cv::split(image, mv);
+	cv::imshow("blue_gray", mv[0]);
+	cv::imshow("green_gray", mv[1]);
+	cv::imshow("red_gray", mv[2]);
+
+	// 颜色合并
+	cv::Mat dst = cv::Mat::zeros(image.size(), image.type());
+	mv[0] = 0;
+	mv[1] = 0;
+	cv::merge(mv, dst);
+	cv::imshow("red_image", dst);
+
+	// 交换通道  实现复杂通道的组合
+	// 表示第一个通道和第三个通道交换
+	int from_to[] = { 0, 2, 1, 1, 2, 0 };
+	// 第2 4个参数表示input output矩阵数量 6表示通道的数量
+	cv::mixChannels(&image, 1, &dst, 1, from_to, 3);
+	cv::imshow("mix_image", dst);
+}
+
+void QuickDemo::inrangeDemo(cv::Mat& image) {
+	cv::Mat hsv;
+	cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+	cv::Mat mask;
+	// 将在两个阈值内的像素值设置为白色（255），而不在阈值区间内的像素值设置为黑色（0）
+	// hsv-->input Scalar-->min/max  mask-->output
+	// 此处要求去除蓝色-->参考important下的hsv取值范围
+	cv::inRange(hsv, cv::Scalar(100, 43, 46), cv::Scalar(124, 255, 255), mask);
+
+	cv::Mat redback = cv::Mat::zeros(image.size(), image.type());
+	redback = cv::Scalar(40, 40, 200);
+
+	cv::bitwise_not(mask, mask);
+	// mask作为掩膜板， 只有mask上的某一个像素点为1的时候才将image上像素拷贝到redback上面，否则保留redback原来的值
+	image.copyTo(redback, mask);
+	cv::imshow("roi区域提取", redback);
+}
+
+void QuickDemo::pixelStatisticDemo(cv::Mat& image) {
+	double min, max;
+	cv::Point min_loc, max_loc;
+	std::vector<cv::Mat> mv;
+	cv::split(image, mv);
+	// 这个函数只支持单通道的图
+	for (int dims = 0; dims < image.channels(); ++dims) {
+		// 获取像素最值及最值的位置
+		cv::minMaxLoc(mv[dims], &min, &max, &min_loc, &max_loc, cv::Mat());
+		std::cout << "min value:" << min << "\tmax value:" << max << "\tmin location:" 
+				  << min_loc << "\tmax location:" << max_loc << std::endl;
+	}
+	// 获取图像的均值和方差 每个通道的都可以打印出来
+	// 均值是对区域内亮度的一个度量，可以用来反应图像的明暗程度
+	// 方差就是数据的分散程度-->即对比度
+	cv::Mat mean, stddev;
+	cv::meanStdDev(image, mean, stddev);
+	for (int dims = 0; dims < image.channels(); ++dims) {
+		std::cout << "No.channels:" << dims << "mean" << dims << ":" << mean.at<double>(dims) << std::endl;
+		std::cout << "No.channels:" << dims << "stddev" << dims << ":" << stddev.at<double>(dims) << std::endl;
+	}
+}
+
+void QuickDemo::drawingDemo(cv::Mat& image) {
+	cv::Rect rect;
+	rect.x = 100;
+	rect.y = 100;
+	rect.width = 100;
+	rect.height = 100;
+	cv::Mat bg = cv::Mat::zeros(image.size(), image.type());
+	cv::rectangle(bg, rect, cv::Scalar(0, 0, 200), 1, cv::LINE_4);
+	cv::circle(bg, cv::Point(150, 150), 50, cv::Scalar(0, 200, 0), -1, cv::LINE_4);
+	cv::line(bg, cv::Point(100, 400), cv::Point(400, 400), cv::Scalar(255, 255, 0), 2, cv::LINE_4);
+	cv::RotatedRect rrt;
+	// 椭圆中心
+	rrt.center = cv::Point(100, 300);
+	// a b轴
+	rrt.size = cv::Size(100, 200);
+	rrt.angle = 90.0;
+	cv::ellipse(bg, rrt, cv::Scalar(0, 255, 255), 2, cv::LINE_4);
+	cv::Mat dst;
+	cv::addWeighted(image, 0.7, bg, 0.3, 0, dst);
+	cv::imshow("Image", dst);
+
+}
+
+void QuickDemo::randomDrawingDemo(cv::Mat& image) {
+	cv::Mat bg = cv::Mat::zeros(image.size(), image.type());
+	cv::RNG rng(time(0));
+	int w = image.cols;
+	int h = image.rows;
+	while (true) {
+		if (cv::waitKey(50) == 27)	break;
+		bg = cv::Scalar(0, 0, 0);
+		int x1 = rng.uniform(0, w);
+		int y1 = rng.uniform(0, h);
+		int x2 = rng.uniform(0, w);
+		int y2 = rng.uniform(0, h);
+		int b = rng.uniform(0, 255);
+		int g = rng.uniform(0, 255);
+		int r = rng.uniform(0, 255);
+		cv::line(bg, cv::Point(x1, y1), cv::Point(x2, y2), cv::Scalar(b, g, r), 1, cv::LINE_AA);
+		cv::imshow("Image", bg);
+	}
+}
+
+void QuickDemo::drawingPolylinesDemo(cv::Mat& image) {
+	cv::Mat bg = cv::Mat::zeros(cv::Size(512, 512), image.type());
+	cv::Point p1(200, 100);
+	cv::Point p2(50, 200);
+	cv::Point p3(150, 400);
+	cv::Point p4(250, 400);
+	cv::Point p5(350, 200);
+	std::vector<cv::Point> pts;
+	pts.push_back(p1);
+	pts.push_back(p2);
+	pts.push_back(p3);
+	pts.push_back(p4);
+	pts.push_back(p5);
+	// 绘制多边形 但是这个函数不能填充
+	cv::polylines(bg, pts, true, cv::Scalar(22, 33, 44), 2, cv::LINE_AA);
+	// 填充 法一
+	// cv::fillPoly(bg, pts, cv::Scalar(255, 255, 32), cv::LINE_AA);
+	// 法二
+	std::vector<std::vector<cv::Point>> contours;
+	contours.push_back(pts);
+	cv::drawContours(bg, contours, -1, cv::Scalar(0, 255, 255), -1);
+	cv::imshow("Image", bg);
+}
+
+cv::Point start_p(-1, -1);
+cv::Point end_p(-1, -1);
+cv::Mat temp;
+static void onDraw(int event, int x, int y, int flags, void* userdata) {
+	cv::Mat image = *(cv::Mat*)userdata;
+	if (event == cv::EVENT_LBUTTONDOWN) {
+		start_p.x = x;
+		start_p.y = y;
+	}
+	else if (event == cv::EVENT_LBUTTONUP) {
+		end_p.x = x;
+		end_p.y = y;
+		int dx = x - start_p.x;
+		int dy = y - start_p.y;
+		cv::Rect rect(start_p.x, start_p.y, dx, dy);
+		if (dx > 0 && x < image.cols && dy > 0 && y < image.rows) {
+			cv::rectangle(image, rect, cv::Scalar(255, 255, 0), 2, cv::LINE_AA);
+			temp.copyTo(image);
+			cv::destroyWindow("ROI区域"); // 销毁窗口  清除之前的内容
+			cv::imshow("ROI区域", image(rect));
+		}
+		// 坐标重置
+		start_p.x = -1;
+		start_p.y = -1;
+		cv::imshow("Image", image);
+	}
+	else if (event == cv::EVENT_MOUSEMOVE) {
+		if (start_p.x > 0 && start_p.y > 0) {
+			end_p.x = x;
+			end_p.y = y;
+			int dx = x - start_p.x;
+			int dy = y - start_p.y;
+			if (dx > 0 && dy > 0) {
+				temp.copyTo(image);
+				cv::rectangle(image, cv::Rect(start_p.x, start_p.y, dx, dy), cv::Scalar(255, 255, 0), 2, cv::LINE_AA);
+			}
+			cv::imshow("Image", image);
+		}
+	}
+}
+
+void QuickDemo::mouseDrawingDemo(cv::Mat& image) {
+	cv::setMouseCallback("Image", onDraw, (void*)&image);
+	temp = image.clone();
+}
+
