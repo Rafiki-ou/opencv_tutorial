@@ -28,7 +28,10 @@ int main(int argc, char** argv)
 	// quick.drawingDemo(img);
 	// quick.randomDrawingDemo(img);
 	// quick.drawingPolylinesDemo(img);
-	quick.mouseDrawingDemo(img);
+	// quick.mouseDrawingDemo(img);
+	// quick.normalizeDemo(img);
+	// quick.resizeDemo(img);
+	quick.flipDemo(img);
 	cv::waitKey(0);
 	return 0;
 }

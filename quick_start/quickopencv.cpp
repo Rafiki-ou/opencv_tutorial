@@ -502,6 +502,24 @@ static void onDraw(int event, int x, int y, int flags, void* userdata) {
 			cv::imshow("Image", image);
 		}
 	}
+	else if (event == cv::EVENT_MOUSEWHEEL) {
+		cv::Mat zoom_image;
+		int w = image.cols;
+		int h = image.rows;
+		int value = 0;
+		// 获取鼠标滚动的方向
+		value = cv::getMouseWheelDelta(flags);
+		if (value > 0) {
+			// 向上
+			cv::resize(image, zoom_image, cv::Size(1.5 * w, 1.5 * h), 0, 0, cv::INTER_LINEAR);
+			temp = zoom_image.clone();
+		}
+		else {
+			cv::resize(image, zoom_image, cv::Size(0.5 * w, 0.5 * h), 0, 0, cv::INTER_LINEAR);
+			temp = zoom_image.clone();
+		}
+		cv::imshow("zoom", zoom_image);
+	}
 }
 
 void QuickDemo::mouseDrawingDemo(cv::Mat& image) {
@@ -509,3 +527,39 @@ void QuickDemo::mouseDrawingDemo(cv::Mat& image) {
 	temp = image.clone();
 }
 
+void QuickDemo::normalizeDemo(cv::Mat& image) {
+	cv::Mat dst;
+	// 转换为float   如果不转换成float  image中的数据都是char型  在归一化之后无法存储归一化的小数结果 舍掉变成0
+	image.convertTo(image, CV_32F);
+	// 需要浮点数据来进行归一化  1.0 0 表示取值在0到1之间 
+	cv::normalize(image, dst, 1.0, 0, cv::NORM_MINMAX);
+	/*
+	 *	归一化几种方式：
+	 *	1. NORM_L1:依据和来算平均
+	 *  2. NORM_L2:单位向量为1
+	 *  3. NORM_INF:依据最大值来求占比
+	 *	4. NORM_MINMAX:根据delta=max-min
+	 */
+	cv::imshow("normalize", dst);
+}
+
+void QuickDemo::resizeDemo(cv::Mat& image) {
+	cv::Mat zoomin, zoomout;
+	int h = image.rows;
+	int w = image.cols;
+	/*cv::resize(image, zoomin, cv::Size(w / 2, h / 2), 0, 0, cv::INTER_LINEAR);
+	cv::resize(image, zoomout, cv::Size(1.5 * w, 1.5 * h), 0, 0, cv::INTER_LINEAR);
+	cv::imshow("zoomin", zoomin);
+	cv::imshow("zoomout", zoomout);*/
+	temp = image.clone();
+	cv::namedWindow("zoom");
+	cv::setMouseCallback("zoom", onDraw, (void*)&temp);
+}
+
+void QuickDemo::flipDemo(cv::Mat& image) {
+	cv::Mat dst;
+	//cv::flip(image, dst, 0);	// 上下
+	//cv::flip(image, dst, 1);	// 左右
+	cv::flip(image, dst, -1);	// 对角线
+	cv::imshow("flip", dst);
+}
