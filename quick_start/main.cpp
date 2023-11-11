@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-	std::string path = "E:/opencv/image/2.png";
+	std::string path = "E:/opencv/image/-36.jpg";
 	cv::Mat img = cv::imread(path);
 	cv::namedWindow("Image", cv::WINDOW_GUI_EXPANDED);
 	if (img.empty()) {
@@ -31,7 +31,13 @@ int main(int argc, char** argv)
 	// quick.mouseDrawingDemo(img);
 	// quick.normalizeDemo(img);
 	// quick.resizeDemo(img);
-	quick.flipDemo(img);
+	// quick.flipDemo(img);
+	// quick.warpAffineDemo(img);
+	// quick.videoDemo(img);
+	// quick.videoDemo(img);
+	// -36.jpg
+	// quick.histogramDemo(img);
+	quick.histogram2DDemo(img);
 	cv::waitKey(0);
 	return 0;
 }

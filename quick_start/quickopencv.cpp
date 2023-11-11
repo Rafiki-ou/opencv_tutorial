@@ -563,3 +563,126 @@ void QuickDemo::flipDemo(cv::Mat& image) {
 	cv::flip(image, dst, -1);	// 对角线
 	cv::imshow("flip", dst);
 }
+
+void QuickDemo::warpAffineDemo(cv::Mat& image) {
+	/*
+		[cos	sin		x]
+		[-sin	cos		y]
+		x y 表示图像的原点
+	*/
+	cv::Mat dst, M;
+	int w = image.cols;
+	int h = image.rows;
+	// 获取原图像旋转的api 第一个参数是原图像的中心  第2个是旋转角度 第三个是缩放比例
+	M = cv::getRotationMatrix2D(cv::Point2f(w / 2, h / 2), 45, 1.0);
+	double cos = cv::abs(M.at<double>(0, 0));
+	double sin = cv::abs(M.at<double>(0, 1));
+	int nw = cos * w + sin * h;
+	int nh = sin * w + cos * h;
+	M.at<double>(0, 2) += (nw / 2 - w / 2);
+	M.at<double>(1, 2) += (nh / 2 - h / 2);
+	// 最后一个参数是设置背景颜色
+	cv::warpAffine(image, dst, M, cv::Size(nw, nh), cv::INTER_LINEAR, 0, cv::Scalar(255, 255, 0));
+	cv::imshow("Image", dst);
+}
+
+void QuickDemo::videoDemo(cv::Mat& image) {
+	cv::VideoCapture capture("E:/opencv/image/mulballs.mp4");
+	int frame_width = capture.get(cv::CAP_PROP_FRAME_WIDTH);
+	int frame_height = capture.get(cv::CAP_PROP_FRAME_HEIGHT);
+	int frame_count = capture.get(cv::CAP_PROP_FRAME_COUNT);
+	double fps = capture.get(cv::CAP_PROP_FPS);
+	std::cout << "frame_width:" << frame_width << "\n"
+			  << "frame_height:" << frame_height << "\n"
+			  << "frame_count:" << frame_count << "\n"
+			  << "fps:" << fps << std::endl;
+	cv::VideoWriter writer("E:/opencv/testvideo.mp4", capture.get(cv::CAP_PROP_FOURCC), fps, cv::Size(frame_width, frame_height), true);
+	cv::Mat frame;
+	while (true) {
+		capture.read(frame);
+		writer.write(frame);
+		int key = cv::waitKey(100);
+		if (key == 27)	break;
+		if (!frame.empty())	cv::imshow("Image", frame);
+		else break;
+	}
+	capture.release(); 
+}
+
+void QuickDemo::histogramDemo(cv::Mat& image) {// 一维直方图
+	/*
+		cvRound()：返回跟参数最接近的整数值，即四舍五入；
+		cvFloor()：返回不大于参数的最大整数值，即向下取整；
+		cvCeil()：返回不小于参数的最小整数值，即向上取整；
+	*/
+	// 三通道分离
+	std::vector<cv::Mat> bgr_plane;
+	cv::split(image, bgr_plane);
+	// 定义参数变量
+	const int channels[1] = { 0 };
+	const int bins[1] = { 256 }; // 灰度级等级
+	float hranges[2] = { 0, 255 };// 灰度值范围
+	const float* ranges[1] = { hranges };
+	cv::Mat b_hist;
+	cv::Mat g_hist;
+	cv::Mat r_hist;
+	// 计算b g r通道的直方图
+	cv::calcHist(&bgr_plane[0], 1, 0, cv::Mat(), b_hist, 1, bins, ranges);
+	cv::calcHist(&bgr_plane[1], 1, 0, cv::Mat(), g_hist, 1, bins, ranges);
+	cv::calcHist(&bgr_plane[2], 1, 0, cv::Mat(), r_hist, 1, bins, ranges);
+	// 显示直方图
+	int hist_w = 512;
+	int hist_h = 400;
+	int bin_w = cvRound((double)hist_w / bins[0]);
+	// 作为一张画布
+	cv::Mat histImage = cv::Mat::zeros(hist_h, hist_w, CV_8UC3);
+	// 归一化直方图数据  因为每个像素值的个数取值范围不一样 会超出显示范围 所以归一化到一个范围
+	cv::normalize(b_hist, b_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	cv::normalize(g_hist, g_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	cv::normalize(r_hist, r_hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	// 绘制直方图曲线
+	for (int i = 1; i < bins[0]; ++i) {
+		// hist_h - cv::cvRound(b_hist.at<float>(i - 1)这里用减法是因为我们想要获得的是每个像素统计值最高点坐标
+		cv::line(histImage, cv::Point(bin_w*(i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))), cv::Scalar(255, 0, 0));
+		cv::line(histImage, cv::Point(bin_w*(i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))), cv::Scalar(0, 255, 0));
+		cv::line(histImage, cv::Point(bin_w*(i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))), cv::Scalar(0, 0, 255));
+	}
+	// 显示直方图
+	cv::namedWindow("Histogram", cv::WINDOW_AUTOSIZE);
+	cv::imshow("Histogram", histImage);
+}
+
+void QuickDemo::histogram2DDemo(cv::Mat& image) {
+	// 2D 直方图
+	cv::Mat hsv, hs_hist;
+	cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+	// 水平分为多少格 均分之和  步长为32
+	int hbins = 30, sbins = 32;
+	int hist_bins[] = { hbins, sbins };
+	float h_range[] = { 0, 180 };
+	float s_range[] = { 0, 256 };
+	const float* hs_ranges[] = { h_range, s_range };
+	int hs_channels[] = { 0, 1 };
+	cv::calcHist(&hsv, 1, hs_channels, cv::Mat(), hs_hist, 2, hist_bins, hs_ranges, true, false);
+	double maxVal = 0;
+	cv::minMaxLoc(hs_hist, 0, &maxVal, 0, 0);
+	int scale = 10;
+	cv::Mat hist2d_image = cv::Mat::zeros(sbins*scale, hbins * scale, CV_8UC3);
+	for (int h = 0; h < hbins; h++) {
+		for (int s = 0; s < sbins; s++)
+		{
+			float binVal = hs_hist.at<float>(h, s);
+			int intensity = cvRound(binVal * 255 / maxVal);
+			cv::rectangle(hist2d_image, cv::Point(h*scale, s*scale),
+				cv::Point((h + 1)*scale - 1, (s + 1)*scale - 1),
+				cv::Scalar::all(intensity),
+				-1);
+		}
+	}
+	cv::applyColorMap(hist2d_image, hist2d_image, cv::COLORMAP_JET);
+	cv::imshow("H-S Histogram", hist2d_image);
+	cv::imwrite("D:/hist_2d.png", hist2d_image);
+}

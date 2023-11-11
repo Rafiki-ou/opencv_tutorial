@@ -23,5 +23,9 @@ public:
 	void normalizeDemo(cv::Mat& image);				// 归一化
 	void resizeDemo(cv::Mat& image);				// 图像伸缩与插值
 	void flipDemo(cv::Mat& image);					// 镜像
+	void warpAffineDemo(cv::Mat& image);			// 旋转
+	void videoDemo(cv::Mat& image);					// 视频处理
+	void histogramDemo(cv::Mat& image);				// 直方图
+	void histogram2DDemo(cv::Mat& image);				// 直方图
 };
 #endif // QUICKOPENCV_H
